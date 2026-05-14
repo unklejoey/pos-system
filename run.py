@@ -7,7 +7,7 @@ import os
 from app import create_app, db
 from app.models import User, Category, Product, Sale, SaleItem, Settings
 
-import reset_data
+
 # Create app using environment config
 app = create_app(os.environ.get('FLASK_ENV', 'development'))
 

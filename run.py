@@ -52,30 +52,29 @@ if __name__ == '__main__':
             )
             admin.set_password('admin123')
             db.session.add(admin)
-        # Create default users
-if not User.query.filter_by(username='sandra').first():
-    owner = User(
-        username='sandra',
-        email='owner@pos.local',
-        full_name='Sandra',
-        role='admin',
-        is_active=True
-    )
-    owner.set_password('Owner123')
-    db.session.add(owner)
+       
+        if not User.query.filter_by(username='sandra').first():
+            owner = User(
+                username='sandra',
+                email='owner@pos.local',
+                full_name='Sandra',
+                role='admin',
+                is_active=True
+             )
+             owner.set_password('Owner123')
+             db.session.add(owner)
 
-if not User.query.filter_by(username='cashier1').first():
-    cashier = User(
-        username='cashier1',
-        email='cashier@pos.local',
-        full_name='Main Cashier',
-        role='cashier',
-        is_active=True
-    )
-    cashier.set_password('Cash123')
-    db.session.add(cashier)
+        if not User.query.filter_by(username='cashier1').first():
+            cashier = User(
+                username='cashier1',
+                email='cashier@pos.local',
+                full_name='Main Cashier',
+                role='cashier',
+                is_active=True
+             )
+             cashier.set_password('Cash123')
+             db.session.add(cashier)
 
-db.session.commit()
             # =========================
             # DEFAULT SETTINGS (UPDATED)
             # =========================

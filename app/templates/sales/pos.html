@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}POS - Checkout - Sellys Fragrance Haven{% endblock %}
+
+{% block content %}
+<div class="container-fluid h-100">
+    <div class="row g-0 h-100">
+        <!-- Product Search and Selection -->
+        <div class="col-lg-8 border-end">
+            <div class="p-3">
+                <!-- Search Bar -->
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" id="product-search" 
+                                   placeholder="Search product name, barcode, or scan barcode...">
+                        </div>
+                        <small class="text-muted">Tip: Scan barcode or type product name</small>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select form-select-lg" id="category-filter">
+                            <option value="">All Categories</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="products-container">
+                    <div class="row" id="products-grid">
+                        <div class="col-12">
+                            <p class="text-muted text-center">Start typing to search products</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="col-lg-4 bg-light d-flex flex-column">
+            <div class="p-3 border-bottom">
+                <h5 class="mb-0 fw-bold">
+                    <i class="bi bi-cart-fill"></i> Shopping Cart
+                </h5>
+            </div>
+
+            <!-- Cart Items -->
+            <div class="flex-grow-1 overflow-auto p-3" id="cart-items">
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-cart3" style="font-size: 2rem;"></i>
+                    <p class="mt-2">Cart is empty</p>
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="p-3 border-top">
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong id="subtotal">{{ subtotal|currency }}</strong>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="discount" class="form-label small mb-1">Discount ({{ currency_symbol }})</label>
+                    <input type="number" class="form-control form-control-sm" id="discount" 
+                           step="0.01" value="0" min="0">
+                </div>
+
+                <div class="mb-3">
+                    <label for="tax" class="form-label small mb-1">Tax ({{ currency_symbol }})</label>
+                    <input type="number" class="form-control form-control-sm" id="tax" 
+                           step="0.01" value="0" min="0">
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between">
+                        <strong>Grand Total:</strong>
+                        <h4 class="text-success mb-0" id="total">{{ total|currency }}</h4>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="cash-received" class="form-label small mb-1">Cash Received ({{ currency_symbol }})</label>
+                    <input type="number" class="form-control form-control-lg" id="cash-received" 
+                           step="0.01" value="0" min="0" placeholder="0.00">
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Change:</span>
+                        <h5 class="text-info mb-0" id="change">{{ change|currency }}</h5>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-success btn-lg" id="checkout-btn">
+                        <i class="bi bi-check-circle"></i> Complete Sale
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" id="clear-cart-btn">
+                        <i class="bi bi-trash"></i> Clear Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Preview Modal -->
+<div class="modal fade" id="receiptPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-title">Receipt Preview</h5>
+                    <small class="text-muted" id="receipt-transaction-id"></small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-lg-8">
+                        <div class="receipt-preview-frame">
+                            <iframe id="receipt-preview-iframe" title="Receipt preview"></iframe>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="receipt-actions h-100">
+                            <h6 class="fw-bold mb-3">Sale Complete</h6>
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-primary btn-lg" id="print-receipt-btn">
+                                    <i class="bi bi-printer"></i> Print Receipt
+                                </button>
+                                <a href="#" class="btn btn-outline-secondary" id="open-receipt-btn" target="_blank" rel="noopener">
+                                    <i class="bi bi-box-arrow-up-right"></i> Open Full Receipt
+                                </a>
+                                <button type="button" class="btn btn-success" id="new-sale-btn" data-bs-dismiss="modal">
+                                    <i class="bi bi-plus-circle"></i> New Sale
+                                </button>
+                            </div>
+                            <hr>
+                            <p class="small text-muted mb-0">
+                                Review the receipt before printing. The cart has been cleared and stock has been updated.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .receipt-preview-frame {
+        background: #f4f5f7;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        min-height: 560px;
+        overflow: hidden;
+    }
+
+    .receipt-preview-frame iframe {
+        width: 100%;
+        height: 560px;
+        border: 0;
+        background: #fff;
+    }
+
+    .receipt-actions {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        background: #fff;
+    }
+</style>
+
+<!-- Product Selection Modal (for POS) -->
+<div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Quantity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Quantity:</label>
+                    <input type="number" class="form-control form-control-lg" id="quantity-input" 
+                           value="1" min="1">
+                </div>
+                <div class="alert alert-info mb-0">
+                    <small id="stock-info"></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="add-to-cart-btn">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/pos.js') }}?v=20260513-2"></script>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Receipt - Sellys Fragrance Haven{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Receipt Header -->
+                    <div class="text-center mb-4 pb-3 border-bottom">
+                        <h2 class="fw-bold mb-0">Receipt - Sellys Fragrance Haven</h2>
+                        <p class="text-muted small mb-0">Transaction ID: <strong>{{ sale.transaction_id }}</strong></p>
+                        <p class="text-muted small">{{ sale.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    </div>
+
+                    <!-- Items -->
+                    <div class="mb-4 pb-3 border-bottom">
+                        <table class="table table-sm mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th class="text-end">Qty</th>
+                                    <th class="text-end">Price</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in sale.sale_items %}
+                                <tr>
+                                    <td>{{ item.product.name }}</td>
+                                    <td class="text-end">{{ item.quantity }}</td>
+                                    <td class="text-end">{{ item.unit_price|currency }}</td>
+                                    <td class="text-end"><strong>{{ item.total_price|currency }}</strong></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Totals -->
+                    <div class="mb-4 pb-3 border-bottom">
+                        <div class="row mb-1">
+                            <div class="col">Subtotal</div>
+                            <div class="col-auto text-end">{{ sale.get_items_subtotal()|currency }}</div>
+                        </div>
+                        {% if sale.discount > 0 %}
+                        <div class="row mb-1 text-success">
+                            <div class="col">Discount</div>
+                            <div class="col-auto text-end">{{ sale.discount|currency }}</div>
+                        </div>
+                        {% endif %}
+                        {% if sale.tax > 0 %}
+                        <div class="row mb-1">
+                            <div class="col">Tax</div>
+                            <div class="col-auto text-end">{{ sale.tax|currency }}</div>
+                        </div>
+                        {% endif %}
+                        <div class="row fw-bold">
+                            <div class="col">Total</div>
+                            <div class="col-auto text-end"><strong>{{ sale.get_calculated_total()|currency }}</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Info -->
+                    <div class="mb-4 pb-3 border-bottom">
+                        <div class="row mb-1">
+                            <div class="col">Payment Method</div>
+                            <div class="col-auto text-end">{{ sale.payment_method|capitalize }}</div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col">Cash Received</div>
+                            <div class="col-auto text-end">{{ sale.cash_received|currency }}</div>
+                        </div>
+                        <div class="row fw-bold">
+                            <div class="col">Change</div>
+                            <div class="col-auto text-end text-success">{{ sale.change|currency }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Cashier Info -->
+                    <div class="text-center mb-4 text-muted small">
+                        <p>Cashier: {{ sale.user.full_name or sale.user.username }}</p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="window.print()">
+                            <i class="bi bi-printer"></i> Print Receipt
+                        </button>
+                        <a href="{{ url_for('sales.pos') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left"></i> Back to POS
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,308 @@
+/* =========================
+   ROOT VARIABLES
+========================= */
+:root {
+    --primary-color: #fd0d5d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+
+    --bg: #f5f7fb;
+    --card-bg: #ffffff;
+    --border: #dee2e6;
+
+    --shadow: 0 2px 6px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+
+    --radius: 12px;
+    --transition: 0.2s ease;
+}
+
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: background-color var(--transition),
+                color var(--transition),
+                border-color var(--transition);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: #333;
+    min-height: 100vh;
+}
+
+/* =========================
+   APP LAYOUT (IMPORTANT FIX)
+========================= */
+.app-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================
+   AUTH PAGE (LOGIN)
+========================= */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #eef2ff, #fdf2f8);
+}
+
+.login-card {
+    width: 380px;
+    padding: 2rem;
+    border-radius: var(--radius);
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255,255,255,0.4);
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+.dashboard-page {
+    flex: 1;
+    padding: 1.5rem;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color), #0a58ca) !important;
+    box-shadow: var(--shadow);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary { background: var(--primary-color); }
+.btn-success { background: var(--success-color); }
+.btn-danger { background: var(--danger-color); }
+
+/* =========================
+   CARDS
+========================= */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* =========================
+   FORMS
+========================= */
+.form-control,
+.form-select {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.2);
+}
+
+/* =========================
+   POS LAYOUT (CORE SYSTEM)
+========================= */
+.pos-container {
+    display: flex;
+    height: calc(100vh - 70px);
+    overflow: hidden;
+}
+
+/* PRODUCTS */
+.pos-products {
+    flex: 2;
+    padding: 1rem;
+    overflow-y: auto;
+    background: #fff;
+}
+
+/* CART */
+.pos-cart {
+    flex: 1;
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+/* =========================
+   PRODUCT GRID
+========================= */
+.product-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.product-card:hover {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.product-image {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.product-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-price {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* =========================
+   CART ITEMS
+========================= */
+.cart-item {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    margin-bottom: 10px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-item-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.cart-item-price {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.cart-item-remove {
+    background: transparent;
+    border: none;
+    color: var(--danger-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+/* =========================
+   TABLES
+========================= */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #f8f9fa;
+    padding: 10px;
+}
+
+/* =========================
+   ALERTS
+========================= */
+.alert {
+    border-radius: 10px;
+    padding: 12px;
+}
+
+/* =========================
+   LOADING
+========================= */
+.spinner {
+    width: 35px;
+    height: 35px;
+    border: 3px solid #eee;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 768px) {
+    .pos-container {
+        flex-direction: column;
+    }
+
+    .pos-products {
+        height: 55vh;
+    }
+
+    .pos-cart {
+        height: 45vh;
+        border-left: none;
+        border-top: 1px solid var(--border);
+    }
+}
+
+/* =========================
+   PRINT
+========================= */
+@media print {
+    .navbar,
+    .btn,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: #fff;
+    }
+}

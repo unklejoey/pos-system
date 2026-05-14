@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Sales History - POS System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2 fw-bold">Sales History</h1>
+            <p class="text-muted">View all transactions and sales records</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('history.export_csv', date_from=date_from, date_to=date_to) }}" class="btn btn-outline-success">
+                <i class="bi bi-download"></i> Export CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted small">Total Revenue</p>
+                    <h3 class="text-success fw-bold">GHC{{ "%.2f"|format(total_revenue) }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted small">Total Transactions</p>
+                    <h3 class="text-primary fw-bold">{{ total_transactions }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <p class="text-muted small">Average Sale</p>
+                    <h3 class="text-info fw-bold">
+                        {% if total_transactions > 0 %}
+                        GHC{{ "%.2f"|format(total_revenue / total_transactions) }}
+                        {% else %}
+                        GHC0.00
+                        {% endif %}
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="search" placeholder="Search transaction ID..."
+                           value="{{ search }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" name="date_from" placeholder="From date"
+                           value="{{ date_from }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control" name="date_to" placeholder="To date"
+                           value="{{ date_to }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sales Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            {% if sales.items %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Date & Time</th>
+                            <th>Items</th>
+                            <th>Subtotal</th>
+                            <th>Discount</th>
+                            <th>Tax</th>
+                            <th>Total</th>
+                            <th>Method</th>
+                            <th>Cashier</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in sales.items %}
+                        <tr>
+                            <td><code>{{ sale.transaction_id }}</code></td>
+                            <td>
+                                <small>
+                                    {{ sale.created_at.strftime('%Y-%m-%d') }}<br>
+                                    {{ sale.created_at.strftime('%H:%M:%S') }}
+                                </small>
+                            </td>
+                            <td>{{ sale.get_items_quantity() }}</td>
+                            <td>GHC{{ "%.2f"|format(sale.subtotal) }}</td>
+                            <td>GHC{{ "%.2f"|format(sale.discount) }}</td>
+                            <td>GHC{{ "%.2f"|format(sale.tax) }}</td>
+                            <td><strong>GHC{{ "%.2f"|format(sale.get_calculated_total()) }}</strong></td>
+                            <td>
+                                <span class="badge bg-secondary">{{ sale.payment_method }}</span>
+                            </td>
+                            <td><small>{{ sale.user.username }}</small></td>
+                            <td>
+                                <a href="{{ url_for('sales.receipt', sale_id=sale.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-receipt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-inbox display-4"></i>
+                <p class="mt-2">No transactions found</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if sales.pages > 1 %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if sales.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('history.index', page=1) }}">First</a>
+            </li>
+            {% endif %}
+            {% for page_num in sales.iter_pages() %}
+                {% if page_num %}
+                <li class="page-item {% if page_num == sales.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('history.index', page=page_num) }}">
+                        {{ page_num }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            {% if sales.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('history.index', page=sales.pages) }}">Last</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

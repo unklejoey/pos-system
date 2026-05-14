@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Product - POS System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2 fw-bold">Edit Product</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- Basic Info -->
+                        <h5 class="fw-bold mb-3">Basic Information</h5>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" required 
+                                       value="{{ product.name }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="barcode" class="form-label">Barcode</label>
+                                <input type="text" class="form-control" id="barcode" name="barcode" 
+                                       value="{{ product.barcode or '' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ product.description or '' }}</textarea>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
+                                <select class="form-select" id="category_id" name="category_id" required>
+                                    {% for cat in categories %}
+                                    <option value="{{ cat.id }}" {% if cat.id == product.category_id %}selected{% endif %}>
+                                        {{ cat.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="image" class="form-label">Product Image</label>
+                                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                <small class="text-muted">PNG, JPG, GIF (Max 16MB)</small>
+                            </div>
+                        </div>
+
+                        {% if product.image %}
+                        <div class="mb-3">
+                            <label class="form-label">Current Image</label>
+                            <div>
+                                <img src="{{ url_for('static', filename='uploads/' + product.image) }}" 
+                                     alt="{{ product.name }}" style="max-height: 100px;" class="img-thumbnail">
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <hr class="my-4">
+
+                        <!-- Pricing & Stock -->
+                        <h5 class="fw-bold mb-3">Pricing & Stock</h5>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="cost_price" class="form-label">Cost Price ({{ currency_symbol }}) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="cost_price" name="cost_price" 
+                                       step="0.01" required value="{{ product.cost_price }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="selling_price" class="form-label">Selling Price ({{ currency_symbol }}) <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="selling_price" name="selling_price" 
+                                       step="0.01" required value="{{ product.selling_price }}">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="stock_quantity" class="form-label">Stock Quantity</label>
+                                <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" 
+                                       min="0" value="{{ product.stock_quantity }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="low_stock_threshold" class="form-label">Low Stock Threshold</label>
+                                <input type="number" class="form-control" id="low_stock_threshold" name="low_stock_threshold" 
+                                       min="0" value="{{ product.low_stock_threshold }}">
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Update Product
+                            </button>
+                            <a href="{{ url_for('products.index') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="mb-0 fw-bold">Product Summary</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <strong>Created:</strong><br>
+                            <small>{{ product.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </li>
+                        <li class="mb-2">
+                            <strong>Last Updated:</strong><br>
+                            <small>{{ product.updated_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </li>
+                        <li class="mb-2">
+                            <strong>Profit Margin:</strong><br>
+                            <small>{{ "%.1f"|format(product.get_profit_margin()) }}%</small>
+                        </li>
+                        <li>
+                            <strong>Stock Status:</strong><br>
+                            <small>
+                                {% if product.is_low_stock() %}
+                                <span class="badge bg-warning">Low Stock</span>
+                                {% else %}
+                                <span class="badge bg-success">In Stock</span>
+                                {% endif %}
+                            </small>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

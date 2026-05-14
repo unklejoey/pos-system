@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - POS System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h2 fw-bold">Store Settings</h1>
+            <p class="text-muted">Configure your store information and defaults</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- Store Information -->
+                        <h5 class="fw-bold mb-3">Store Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="store_name" class="form-label">Store Name</label>
+                            <input type="text" class="form-control" id="store_name" name="store_name" 
+                                   required value="{{ store_name }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="logo" class="form-label">Store Logo</label>
+                            <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                            <small class="text-muted">PNG, JPG, GIF (Max 16MB)</small>
+                            {% if store_logo %}
+                            <div class="mt-2">
+                                <img src="{{ url_for('static', filename='uploads/' + store_logo) }}" 
+                                     alt="Logo" style="max-height: 80px;" class="img-thumbnail">
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Receipt Settings -->
+                        <h5 class="fw-bold mb-3">Receipt Settings</h5>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="currency_symbol" class="form-label">Currency Symbol</label>
+                                <input type="text" class="form-control" id="currency_symbol" name="currency_symbol" 
+                                       value="{{ currency_symbol }}" maxlength="3">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tax_rate" class="form-label">Default Tax Rate (%)</label>
+                                <input type="number" class="form-control" id="tax_rate" name="tax_rate" 
+                                       step="0.01" value="{{ tax_rate }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="receipt_footer" class="form-label">Receipt Footer Text</label>
+                            <textarea class="form-control" id="receipt_footer" name="receipt_footer" rows="3">{{ receipt_footer }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Save Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Information</h5>
+                    <ul class="small">
+                        <li>Store name appears on all receipts</li>
+                        <li>Store logo can be printed on receipts</li>
+                        <li>Currency symbol is used in all displays</li>
+                        <li>Default tax rate applies to new sales</li>
+                        <li>Receipt footer shows custom message</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
